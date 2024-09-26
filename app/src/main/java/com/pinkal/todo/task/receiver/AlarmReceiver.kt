@@ -9,7 +9,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.RingtoneManager
-import android.support.v7.app.NotificationCompat
+import androidx.core.app.NotificationCompat
 import com.pinkal.todo.R
 import com.pinkal.todo.MainActivity
 import com.pinkal.todo.utils.toastMessage

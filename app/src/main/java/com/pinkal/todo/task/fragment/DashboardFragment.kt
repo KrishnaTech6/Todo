@@ -1,21 +1,25 @@
 package com.pinkal.todo.task.fragment
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.graphics.*
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pinkal.todo.R
+import com.pinkal.todo.databinding.FragmentDashboardBinding
 import com.pinkal.todo.task.activity.AddTaskActivity
 import com.pinkal.todo.task.adapter.TaskAdapter
 import com.pinkal.todo.task.database.DBManagerTask
@@ -25,8 +29,6 @@ import com.pinkal.todo.utils.getFormatDate
 import com.pinkal.todo.utils.getFormatTime
 import com.pinkal.todo.utils.views.recyclerview.itemclick.RecyclerItemClickListener
 import com.pinkal.todo.utils.views.recyclerview.itemdrag.OnStartDragListener
-import kotlinx.android.synthetic.main.fragment_dashboard.view.*
-
 
 /**
  * Created by Pinkal on 22/5/17.
@@ -44,31 +46,36 @@ class DashboardFragment : Fragment(), View.OnClickListener, OnStartDragListener 
     lateinit var taskAdapter: TaskAdapter
 
     lateinit var mItemTouchHelper: ItemTouchHelper
+    private lateinit var binding: FragmentDashboardBinding
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
 
-        var view = inflater!!.inflate(R.layout.fragment_dashboard, container, false)
+        binding = FragmentDashboardBinding.inflate(layoutInflater, container, false)
 
-        initialize(view)
+        initialize()
 
-        return view
+        return binding.root
     }
 
-    private fun initialize(view: View) {
+    private fun initialize() {
 
-        fabAddTask = view.fabAddTask
-        txtNoTask = view.txtNoTask
-        recyclerViewTask = view.recyclerViewTask
+        fabAddTask = binding.fabAddTask
+        txtNoTask = binding.txtNoTask
+        recyclerViewTask = binding.recyclerViewTask
 
         recyclerViewTask.setHasFixedSize(true)
-        recyclerViewTask.layoutManager = LinearLayoutManager(activity!!) as RecyclerView.LayoutManager
+        recyclerViewTask.layoutManager = LinearLayoutManager(requireContext()) as RecyclerView.LayoutManager
 
         fabAddTask.setOnClickListener(this)
 
-        dbManager = DBManagerTask(activity)
+        dbManager = DBManagerTask(requireContext())
         mArrayList = dbManager.getTaskList()
 
-        taskAdapter = TaskAdapter(activity, mArrayList)
+        taskAdapter = TaskAdapter(requireContext(), mArrayList)
         recyclerViewTask.adapter = taskAdapter
 
         initSwipe()
@@ -77,21 +84,30 @@ class DashboardFragment : Fragment(), View.OnClickListener, OnStartDragListener 
 //        mItemTouchHelper = ItemTouchHelper(callback)
 //        mItemTouchHelper.attachToRecyclerView(recyclerViewTask)
 
-        recyclerViewTask.addOnItemTouchListener(
-                RecyclerItemClickListener(context, recyclerViewTask, object : RecyclerItemClickListener.OnItemClickListener {
-                    override fun onItemClick(view: View, position: Int) {
-                        Log.e(TAG, "item click Position : " + position)
+        val gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                return true
+            }
+        })
 
-                        val holder: TaskAdapter.ViewHolder = TaskAdapter.ViewHolder(view)
 
-                        clickForDetails(holder, position)
+        recyclerViewTask.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                val childView = rv.findChildViewUnder(e.x, e.y)
+                if (childView != null && gestureDetector.onTouchEvent(e)) {
+                    val position = rv.getChildAdapterPosition(childView)
+                    if (position != RecyclerView.NO_POSITION) {
+                        // Handle item click
+                        Log.e(TAG, "item click Position : $position")
+                        val task = taskAdapter.getHolder(position) // Implement this in your TaskAdapter
+                        clickForDetails(task, position)
                     }
+                    return true // Intercept the touch event
+                }
+                return false // Do not intercept the touch event
+            }
+        })
 
-                    override fun onLongItemClick(view: View, position: Int) {
-                        Log.e(TAG, "item long click Position : " + position)
-                    }
-                })
-        )
     }
 
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
@@ -148,7 +164,7 @@ class DashboardFragment : Fragment(), View.OnClickListener, OnStartDragListener 
 
     override fun onClick(view: View?) {
 
-        when (view!!.id) {
+        when (view?.id) {
             R.id.fabAddTask -> {
                 startActivityForResult(Intent(activity, AddTaskActivity::class.java), DASHBOARD_RECYCLEVIEW_REFRESH)
             }
@@ -188,6 +204,7 @@ class DashboardFragment : Fragment(), View.OnClickListener, OnStartDragListener 
                 }
             }
 
+            @SuppressLint("ResourceType")
             override fun onChildDraw(canvas: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
 
                 if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {

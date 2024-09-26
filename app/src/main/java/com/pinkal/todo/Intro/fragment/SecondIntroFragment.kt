@@ -1,11 +1,12 @@
 package com.pinkal.todo.Intro.fragment
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import com.pinkal.todo.R
+import com.pinkal.todo.databinding.FragmentSecondIntroBinding
 import com.pinkal.todo.utils.KEY_PAGE_NUMBER
 
 
@@ -28,11 +29,15 @@ class SecondIntroFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_second_intro, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding  = FragmentSecondIntroBinding.inflate(layoutInflater, container, false)
 
         initialize(view)
-        return view
+        return binding.root
     }
 
     private fun initialize(view: View?) {

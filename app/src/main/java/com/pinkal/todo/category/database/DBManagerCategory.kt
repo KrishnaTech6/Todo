@@ -1,14 +1,16 @@
 package com.pinkal.todo.category.database
 
+
+
 import android.content.ContentValues
 import android.content.Context
-import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import com.pinkal.todo.databasehelper.DatabaseHelper
 import com.pinkal.todo.category.model.CategoryModel
 import com.pinkal.todo.utils.CATEGORY_NAME
 import com.pinkal.todo.utils.ID
 import com.pinkal.todo.utils.TABLE_CATEGORY
+import java.sql.SQLException
 
 /**
  * Created by Pinkal on 25/5/17.
@@ -80,7 +82,7 @@ class DBManagerCategory(val context: Context) {
 
         if (cursor.moveToFirst()) {
             do {
-                categoryName = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME))
+                categoryName = cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY_NAME))
             } while (cursor.moveToNext())
         }
         cursor.close()
@@ -103,8 +105,8 @@ class DBManagerCategory(val context: Context) {
             do {
                 val categoryModel = CategoryModel()
 
-                categoryModel.id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ID)))
-                categoryModel.categoryName = cursor.getString(cursor.getColumnIndex(CATEGORY_NAME))
+                categoryModel.id = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(ID)))
+                categoryModel.categoryName = cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY_NAME))
 
                 arrayList.add(categoryModel)
 
@@ -125,7 +127,7 @@ class DBManagerCategory(val context: Context) {
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                labels.add(cursor.getString(cursor.getColumnIndex(CATEGORY_NAME)))
+                labels.add(cursor.getString(cursor.getColumnIndexOrThrow(CATEGORY_NAME)))
 
             } while (cursor.moveToNext())
         }

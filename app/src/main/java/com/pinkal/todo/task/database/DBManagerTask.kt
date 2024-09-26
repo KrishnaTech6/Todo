@@ -88,18 +88,18 @@ class DBManagerTask(val context: Context) {
         if (cursor != null && cursor.moveToFirst()) {
             do {
 
-                val isFinish = Integer.parseInt(cursor.getString(cursor.getColumnIndex(TASK_FINISH)))
+                val isFinish = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(TASK_FINISH)))
 
                 if (isFinish == TASK_IS_NOT_FINISH) {
 
                     val taskModel = TaskModel()
 
-                    taskModel.id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ID)))
-                    taskModel.title = cursor.getString(cursor.getColumnIndex(TASK_TITLE))
-                    taskModel.task = cursor.getString(cursor.getColumnIndex(TASK_TASK))
-                    taskModel.category = cursor.getString(cursor.getColumnIndex(TASK_CATEGORY))
-                    taskModel.date = cursor.getString(cursor.getColumnIndex(TASK_DATE))
-                    taskModel.time = cursor.getString(cursor.getColumnIndex(TASK_TIME))
+                    taskModel.id = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(ID)))
+                    taskModel.title = cursor.getString(cursor.getColumnIndexOrThrow(TASK_TITLE))
+                    taskModel.task = cursor.getString(cursor.getColumnIndexOrThrow(TASK_TASK))
+                    taskModel.category = cursor.getString(cursor.getColumnIndexOrThrow(TASK_CATEGORY))
+                    taskModel.date = cursor.getString(cursor.getColumnIndexOrThrow(TASK_DATE))
+                    taskModel.time = cursor.getString(cursor.getColumnIndexOrThrow(TASK_TIME))
 
                     arrayList.add(taskModel)
 
@@ -136,18 +136,18 @@ class DBManagerTask(val context: Context) {
         if (cursor != null && cursor.moveToFirst()) {
             do {
 
-                val isFinish = Integer.parseInt(cursor.getString(cursor.getColumnIndex(TASK_FINISH)))
+                val isFinish = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(TASK_FINISH)))
 
                 if (isFinish == TASK_IS_FINISH) {
 
                     val taskModel = TaskModel()
 
-                    taskModel.id = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ID)))
-                    taskModel.title = cursor.getString(cursor.getColumnIndex(TASK_TITLE))
-                    taskModel.task = cursor.getString(cursor.getColumnIndex(TASK_TASK))
-                    taskModel.category = cursor.getString(cursor.getColumnIndex(TASK_CATEGORY))
-                    taskModel.date = cursor.getString(cursor.getColumnIndex(TASK_DATE))
-                    taskModel.time = cursor.getString(cursor.getColumnIndex(TASK_TIME))
+                    taskModel.id = Integer.parseInt(cursor.getString(cursor.getColumnIndexOrThrow(ID)))
+                    taskModel.title = cursor.getString(cursor.getColumnIndexOrThrow(TASK_TITLE))
+                    taskModel.task = cursor.getString(cursor.getColumnIndexOrThrow(TASK_TASK))
+                    taskModel.category = cursor.getString(cursor.getColumnIndexOrThrow(TASK_CATEGORY))
+                    taskModel.date = cursor.getString(cursor.getColumnIndexOrThrow(TASK_DATE))
+                    taskModel.time = cursor.getString(cursor.getColumnIndexOrThrow(TASK_TIME))
 
                     arrayList.add(taskModel)
 

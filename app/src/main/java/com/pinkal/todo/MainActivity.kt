@@ -6,22 +6,22 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
-import android.support.design.widget.NavigationView
-import android.support.v4.app.Fragment
-import android.support.v4.view.GravityCompat
-import android.support.v4.widget.DrawerLayout
-import android.support.v7.app.ActionBarDrawerToggle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import com.google.android.material.navigation.NavigationView
 import com.pinkal.todo.category.fragment.CategoryFragment
+import com.pinkal.todo.databinding.ActivityMainBinding
 import com.pinkal.todo.task.fragment.DashboardFragment
 import com.pinkal.todo.task.fragment.HistoryFragment
 import com.pinkal.todo.utils.APP_PACKAGE_NAME
 import com.pinkal.todo.utils.toastMessage
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.app_bar_main.*
 import org.jsoup.Jsoup
 
 
@@ -34,9 +34,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var handler: Handler
     var doubleBackToExitPressedOnce = false
 
+    private val toolbarMain = findViewById<Toolbar>(R.id.toolbarMain)
+
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding= ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initialize()
 
@@ -52,17 +57,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * initializing views and data
      * */
     fun initialize() {
-
         setSupportActionBar(toolbarMain)
 
         val toggle = ActionBarDrawerToggle(
-                this, drawer_layout, toolbarMain, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
-        drawer_layout.setDrawerListener(toggle)
+                this, binding.drawerLayout, toolbarMain, R.string.navigation_drawer_open, R.string.navigation_drawer_close)
+        binding.drawerLayout.setDrawerListener(toggle)
         toggle.syncState()
 
         handler = Handler()
 
-        nav_view.setNavigationItemSelectedListener(this)
+        binding.navView.setNavigationItemSelectedListener(this)
     }
 
     override fun onBackPressed() {
@@ -146,7 +150,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             }
         }
 
-        drawer_layout.closeDrawer(GravityCompat.START)
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
 
         try {
             fragment = fragmentClass!!.newInstance() as Fragment
@@ -191,14 +195,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
             newVersion = Jsoup.connect("https://play.google.com/store/apps/details?id=" +
                     APP_PACKAGE_NAME + "&hl=en")
-                    .timeout(30000)
-                    .userAgent(
-                            "Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
-                    .referrer("http://www.google.com").get()
-                    .select("div[itemprop=softwareVersion]").first()
-                    .ownText()
+                .timeout(30000)
+                .userAgent(
+                    "Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                .referrer("http://www.google.com").get()
+                .select("div[itemprop=softwareVersion]").first()
+                ?.ownText() ?:""
 
-            Log.e("new Version", newVersion)
+            Log.e("new Version", newVersion )
             Log.e("old Version", oldVersion)
 
             return null

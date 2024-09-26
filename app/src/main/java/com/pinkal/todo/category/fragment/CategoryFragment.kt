@@ -1,23 +1,24 @@
 package com.pinkal.todo.category.fragment
 
+
 import android.os.Bundle
-import android.support.design.widget.FloatingActionButton
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.pinkal.todo.R
 import com.pinkal.todo.category.`interface`.CategoryAdd
 import com.pinkal.todo.category.`interface`.CategoryIsEmpty
 import com.pinkal.todo.category.adapter.CategoryAdapter
 import com.pinkal.todo.category.database.DBManagerCategory
 import com.pinkal.todo.category.model.CategoryModel
+import com.pinkal.todo.databinding.FragmentCategoryBinding
 import com.pinkal.todo.utils.dialogAddCategory
-import kotlinx.android.synthetic.main.fragment_category.view.*
 import java.util.*
 
 /**
@@ -34,33 +35,38 @@ class CategoryFragment : Fragment(), View.OnClickListener, CategoryAdd, Category
     var mArrayList: ArrayList<CategoryModel> = ArrayList()
     lateinit var categoryAdapter: CategoryAdapter
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    private lateinit var binding: FragmentCategoryBinding
 
-        var view = inflater!!.inflate(R.layout.fragment_category, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentCategoryBinding.inflate(layoutInflater, container, false)
 
-        initialize(view)
+        initialize()
 
-        return view
+        return binding.root
     }
 
     /**
      * initializing views and data
      * */
-    private fun initialize(view: View) {
+    private fun initialize() {
 
-        fabAddCategory = view.fabAddCategory
-        recyclerViewCategory = view.recyclerViewCategory
-        txtNoCategory = view.txtNoCategory
+        fabAddCategory = binding.fabAddCategory
+        recyclerViewCategory = binding.recyclerViewCategory
+        txtNoCategory = binding.txtNoCategory
 
         recyclerViewCategory.setHasFixedSize(true)
-        recyclerViewCategory.layoutManager = LinearLayoutManager(activity!!) as RecyclerView.LayoutManager
+        recyclerViewCategory.layoutManager = LinearLayoutManager(requireContext()) as RecyclerView.LayoutManager
 
         fabAddCategory.setOnClickListener(this)
 
-        val dbManageCategory = DBManagerCategory(activity)
+        val dbManageCategory = DBManagerCategory(requireContext())
         mArrayList = dbManageCategory.getCategoryList()
 
-        categoryAdapter = CategoryAdapter(activity, mArrayList, this)
+        categoryAdapter = CategoryAdapter(requireContext(), mArrayList, this)
         recyclerViewCategory.adapter = categoryAdapter
     }
 
@@ -74,9 +80,9 @@ class CategoryFragment : Fragment(), View.OnClickListener, CategoryAdd, Category
      * */
     override fun onClick(view: View?) {
 
-        when (view!!.id) {
+        when (view?.id) {
             R.id.fabAddCategory -> {
-                dialogAddCategory(activity, this)
+                dialogAddCategory(requireContext(), this)
             }
         }
     }
@@ -92,7 +98,7 @@ class CategoryFragment : Fragment(), View.OnClickListener, CategoryAdd, Category
 
             Log.e(TAG, "true : " + isAdded)
 
-            val dbManageCategory = DBManagerCategory(activity)
+            val dbManageCategory = DBManagerCategory(requireContext())
             mArrayList = dbManageCategory.getCategoryList()
 
             categoryAdapter.clearAdapter()

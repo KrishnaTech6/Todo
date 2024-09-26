@@ -1,14 +1,20 @@
 package com.pinkal.todo.Intro.fragment
 
 import android.content.Intent
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.Fragment
 import com.pinkal.todo.MainActivity
-import kotlinx.android.synthetic.main.fragment_fourth_intro.view.*
+import com.pinkal.todo.databinding.FragmentFourthIntroBinding
 
 /**
  * Created by Pinkal on 13/6/17.
  */
-class FourthIntroFragment : android.support.v4.app.Fragment() {
+class FourthIntroFragment : Fragment() {
 
     lateinit var btnGetStarted: Button
 
@@ -17,7 +23,7 @@ class FourthIntroFragment : android.support.v4.app.Fragment() {
 
             val fragmentFourth = FourthIntroFragment()
 
-            val bundle = android.os.Bundle()
+            val bundle = Bundle()
             bundle.putInt(com.pinkal.todo.utils.KEY_PAGE_NUMBER, pageNum)
 
             fragmentFourth.arguments = bundle
@@ -26,18 +32,17 @@ class FourthIntroFragment : android.support.v4.app.Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?, savedInstanceState: android.os.Bundle?): android.view.View? {
-        val view = inflater!!.inflate(com.pinkal.todo.R.layout.fragment_fourth_intro, container, false)
-
-        initialize(view)
-        return view
-    }
-
-    private fun initialize(view: android.view.View?) {
-        btnGetStarted = view!!.btnGetStarted
-        btnGetStarted.setOnClickListener({
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val binding = FragmentFourthIntroBinding.inflate(layoutInflater, container, false)
+        btnGetStarted = binding.btnGetStarted
+        btnGetStarted.setOnClickListener {
             startActivity(Intent(activity, MainActivity::class.java))
-            activity.finish()
-        })
+            activity?.finish()
+        }
+        return binding.root
     }
 }

@@ -4,22 +4,22 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AppCompatActivity
 import com.pinkal.todo.R
 import com.pinkal.todo.category.`interface`.CategoryAdd
 import com.pinkal.todo.category.database.DBManagerCategory
 import com.pinkal.todo.MainActivity
+import com.pinkal.todo.databinding.ActivityAddTaskBinding
 import com.pinkal.todo.task.database.DBManagerTask
 import com.pinkal.todo.task.listener.onItemSelectedListener
 import com.pinkal.todo.task.receiver.AlarmReceiver
 import com.pinkal.todo.utils.dialogAddCategory
 import com.pinkal.todo.utils.toastMessage
-import kotlinx.android.synthetic.main.activity_add_task.*
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -33,6 +33,7 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
     val TAG: String = MainActivity::class.java.simpleName
 
     val mActivity: Activity = this@AddTaskActivity
+    private lateinit var binding: ActivityAddTaskBinding
 
     lateinit var myCalendar: Calendar
 
@@ -48,7 +49,8 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_task)
+        binding = ActivityAddTaskBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         initialize()
     }
@@ -59,18 +61,18 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
      * */
     private fun initialize() {
 
-        setSupportActionBar(toolbarAddTask)
+        setSupportActionBar(binding.toolbarAddTask)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
         supportActionBar!!.setDisplayShowHomeEnabled(true)
 
         /**
          * click listener
          * */
-        edtSetDate.setOnClickListener(this)
-        edtSetTime.setOnClickListener(this)
-        imgCancelDate.setOnClickListener(this)
-        imgCancelTime.setOnClickListener(this)
-        imgAddCategory.setOnClickListener(this)
+        binding.edtSetDate.setOnClickListener(this)
+        binding.edtSetTime.setOnClickListener(this)
+        binding.imgCancelDate.setOnClickListener(this)
+        binding.imgCancelTime.setOnClickListener(this)
+        binding.imgAddCategory.setOnClickListener(this)
 
         /**
          * load category in spinner
@@ -97,9 +99,9 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
     /**
      * actionbar clicks
      * */
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
-        val id = item!!.itemId
+        val id = item.itemId
 
         when (id) {
             R.id.action_done -> {
@@ -111,6 +113,7 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
     }
 
     override fun onBackPressed() {
+        super.onBackPressed()
         checkTask()
     }
 
@@ -121,8 +124,8 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
      * */
     private fun checkTask() {
 
-        finalTitle = edtTitle.text.toString().trim()
-        finalTask = edtTask.text.toString().trim()
+        finalTitle = binding.edtTitle.text.toString().trim()
+        finalTask = binding.edtTask.text.toString().trim()
 
         if (finalTitle != "" && finalTask != "") {
             val alertDialog: AlertDialog.Builder = AlertDialog.Builder(mActivity)
@@ -151,8 +154,8 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
      * */
     private fun addTask() {
 
-        finalTitle = edtTitle.text.toString().trim()
-        finalTask = edtTask.text.toString().trim()
+        finalTitle = binding.edtTitle.text.toString().trim()
+        finalTask = binding.edtTask.text.toString().trim()
 
         val dbManager = DBManagerTask(mActivity)
 
@@ -217,7 +220,8 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
 //        intent.putExtra(Constant.TASK_TITLE, title)
 //        intent.putExtra(Constant.TASK_TASK, task)
 
-        val pendingIntent = PendingIntent.getBroadcast(this, 0/*taskRowId*/, intent, PendingIntent.FLAG_ONE_SHOT)
+        val pendingIntent = PendingIntent.getBroadcast(this, 0/*taskRowId*/, intent,
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
         alarmManager.set(AlarmManager.RTC_WAKEUP, myCalendar.timeInMillis/*timeInMilis*/, pendingIntent)
 
     }
@@ -242,9 +246,9 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
 
         Collections.sort(labels)
 
-        spinnerCategory.adapter = dataAdapter
+        binding.spinnerCategory.adapter = dataAdapter
 
-        spinnerCategory.onItemSelectedListener = onItemSelectedListener(this)
+        binding.spinnerCategory.onItemSelectedListener = onItemSelectedListener(this)
     }
 
     override fun spinnerCatName(categoryName: String) {
@@ -270,21 +274,21 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
                 setTime()
             }
             R.id.imgCancelDate -> {
-                edtSetDate.setText("")
+                binding.edtSetDate.setText("")
                 finalDate = ""
-                imgCancelDate.visibility = View.GONE
-                if (relativeLayoutTime.visibility == View.VISIBLE) {
-                    relativeLayoutTime.visibility = View.GONE
-                    edtSetTime.setText("")
+                binding.imgCancelDate.visibility = View.GONE
+                if (binding.relativeLayoutTime.visibility == View.VISIBLE) {
+                    binding.relativeLayoutTime.visibility = View.GONE
+                    binding.edtSetTime.setText("")
                     finalTime = ""
-                    imgCancelTime.visibility = View.GONE
+                    binding.imgCancelTime.visibility = View.GONE
                 }
 
             }
             R.id.imgCancelTime -> {
-                edtSetTime.setText("")
+                binding.edtSetTime.setText("")
                 finalTime = ""
-                imgCancelTime.visibility = View.GONE
+                binding.imgCancelTime.visibility = View.GONE
             }
             R.id.imgAddCategory -> {
                 dialogAddCategory(mActivity, this)
@@ -349,9 +353,9 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
 
         val myFormat2 = "h:mm a"
         val sdf2 = SimpleDateFormat(myFormat2, Locale.US)
-        edtSetTime.setText(sdf2.format(myCalendar.time))
+        binding.edtSetTime.setText(sdf2.format(myCalendar.time))
 
-        imgCancelTime.visibility = View.VISIBLE
+        binding.imgCancelTime.visibility = View.VISIBLE
     }
 
 
@@ -368,10 +372,10 @@ class AddTaskActivity : AppCompatActivity(), View.OnClickListener, CategoryAdd, 
 
         val myFormat2 = "EEE, d MMM yyyy"
         val sdf2 = SimpleDateFormat(myFormat2, Locale.US)
-        edtSetDate.setText(sdf2.format(myCalendar.time))
+        binding.edtSetDate.setText(sdf2.format(myCalendar.time))
 
-        relativeLayoutTime.visibility = View.VISIBLE
-        imgCancelDate.visibility = View.VISIBLE
+        binding.relativeLayoutTime.visibility = View.VISIBLE
+        binding.imgCancelDate.visibility = View.VISIBLE
     }
 
     override fun isCategoryAdded(isAdded: Boolean) {

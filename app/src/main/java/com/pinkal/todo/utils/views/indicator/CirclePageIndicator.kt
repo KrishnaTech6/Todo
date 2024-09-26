@@ -23,15 +23,17 @@ import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.graphics.Paint.Style
 import android.os.Parcel
 import android.os.Parcelable
-import android.support.v4.view.MotionEventCompat
-import android.support.v4.view.ViewConfigurationCompat
-import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.widget.LinearLayout.HORIZONTAL
 import android.widget.LinearLayout.VERTICAL
+import androidx.appcompat.widget.Toolbar
+import androidx.core.view.MotionEventCompat
+import androidx.core.view.ViewConfigurationCompat
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import com.pinkal.todo.R
 
 /**
@@ -47,7 +49,7 @@ class CirclePageIndicator @JvmOverloads constructor(context: Context, attrs: Att
     private val mPaintStroke = Paint(ANTI_ALIAS_FLAG)
     private val mPaintFill = Paint(ANTI_ALIAS_FLAG)
     private var mViewPager: ViewPager? = null
-    private var mListener: ViewPager.OnPageChangeListener? = null
+    private var mListener: OnPageChangeListener? = null
     private var mCurrentPage: Int = 0
     private var mSnapPage: Int = 0
     private var mPageOffset: Float = 0.toFloat()
@@ -167,7 +169,7 @@ class CirclePageIndicator @JvmOverloads constructor(context: Context, attrs: Att
         if (mViewPager == null) {
             return
         }
-        val count = mViewPager!!.adapter.count
+        val count = mViewPager!!.adapter!!.count
         if (count == 0) {
             return
         }
@@ -248,7 +250,7 @@ class CirclePageIndicator @JvmOverloads constructor(context: Context, attrs: Att
         if (super.onTouchEvent(ev)) {
             return true
         }
-        if (mViewPager == null || mViewPager!!.adapter.count == 0) {
+        if (mViewPager == null || mViewPager!!.adapter!!.count == 0) {
             return false
         }
 
@@ -280,7 +282,7 @@ class CirclePageIndicator @JvmOverloads constructor(context: Context, attrs: Att
 
             MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
                 if (!mIsDragging) {
-                    val count = mViewPager!!.adapter.count
+                    val count = mViewPager!!.adapter!!.count
                     val width = width
                     val halfWidth = width / 2f
                     val sixthWidth = width / 6f
@@ -421,7 +423,7 @@ class CirclePageIndicator @JvmOverloads constructor(context: Context, attrs: Att
             result = specSize
         } else {
             //Calculate the width according the views count
-            val count = mViewPager!!.adapter.count
+            val count = mViewPager!!.adapter!!.count
             result = (paddingLeft.toFloat() + paddingRight.toFloat()
                     + count.toFloat() * 2f * mRadius + (count - 1) * mRadius + 1f).toInt()
             //Respect AT_MOST value if that was what is called for by measureSpec
@@ -477,7 +479,7 @@ class CirclePageIndicator @JvmOverloads constructor(context: Context, attrs: Att
     internal class SavedState : View.BaseSavedState {
         var currentPage: Int = 0
 
-        constructor(superState: Parcelable) : super(superState) {}
+        constructor(superState: Parcelable?) : super(superState) {}
 
         private constructor(`in`: Parcel) : super(`in`) {
             currentPage = `in`.readInt()
@@ -490,6 +492,7 @@ class CirclePageIndicator @JvmOverloads constructor(context: Context, attrs: Att
 
         companion object {
 
+            @JvmField
             val CREATOR: Parcelable.Creator<SavedState> = object : Parcelable.Creator<SavedState> {
                 override fun createFromParcel(`in`: Parcel): SavedState {
                     return SavedState(`in`)

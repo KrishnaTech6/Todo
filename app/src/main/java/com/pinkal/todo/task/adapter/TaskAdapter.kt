@@ -1,16 +1,15 @@
 package com.pinkal.todo.task.adapter
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.pinkal.todo.R
+import com.pinkal.todo.databinding.RowTaskBinding
 import com.pinkal.todo.task.database.DBManagerTask
 import com.pinkal.todo.task.model.TaskModel
 import com.pinkal.todo.utils.views.recyclerview.itemdrag.ItemTouchHelperAdapter
-import kotlinx.android.synthetic.main.row_task.view.*
 import java.util.*
 
 /**
@@ -25,25 +24,8 @@ class TaskAdapter(val mContext: Context, var mArrayList: ArrayList<TaskModel>) :
     override fun getItemCount(): Int {
         return mArrayList.size
     }
-
-    override fun onCreateViewHolder(parent: ViewGroup?, viewType: Int): ViewHolder {
-        val mView = LayoutInflater.from(mContext).inflate(R.layout.row_task, parent, false)
-        return ViewHolder(mView)
-    }
-
-    override fun onBindViewHolder(holder: ViewHolder?, position: Int) {
-
-        val androidColors = mContext.resources.getIntArray(R.array.random_color)
-        val randomAndroidColor = androidColors[Random().nextInt(androidColors.size)]
-        holder!!.viewColorTag.setBackgroundColor(randomAndroidColor)
-
-        Log.e(TAG, "title : " + mArrayList[position].title)
-        Log.e(TAG, "task : " + mArrayList[position].task)
-        Log.e(TAG, "category : " + mArrayList[position].category)
-        holder.txtShowTitle.text = mArrayList[position].title
-        holder.txtShowTask.text = mArrayList[position].task
-        holder.txtShowCategory.text = mArrayList[position].category
-
+    fun getHolder(position: Int): ViewHolder {
+        return this.getHolder(position)
     }
 
     /**
@@ -98,21 +80,39 @@ class TaskAdapter(val mContext: Context, var mArrayList: ArrayList<TaskModel>) :
         return true
     }
 
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding= RowTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val androidColors = mContext.resources.getIntArray(R.array.random_color)
+        val randomAndroidColor = androidColors[Random().nextInt(androidColors.size)]
+        holder.viewColorTag.setBackgroundColor(randomAndroidColor)
+
+        Log.e(TAG, "title : " + mArrayList[position].title)
+        Log.e(TAG, "task : " + mArrayList[position].task)
+        Log.e(TAG, "category : " + mArrayList[position].category)
+        holder.txtShowTitle.text = mArrayList[position].title
+        holder.txtShowTask.text = mArrayList[position].task
+        holder.txtShowCategory.text = mArrayList[position].category
+    }
+
     override fun getItemViewType(position: Int): Int {
         return position
     }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val viewColorTag = view.viewColorTag!!
-        val txtShowTitle = view.txtShowTitle!!
-        val txtShowTask = view.txtShowTask!!
-        val txtShowCategory = view.txtShowCategory!!
+    class ViewHolder(private val binding: RowTaskBinding) : RecyclerView.ViewHolder(binding.root) {
+        val viewColorTag = binding.viewColorTag
+        val txtShowTitle = binding.txtShowTitle
+        val txtShowTask = binding.txtShowTask
+        val txtShowCategory = binding.txtShowCategory
 
-        val txtShowDate = view.txtShowDate!!
-        val textDate = view.textDate!!
-        val txtShowTime = view.txtShowTime!!
-        val textTime = view.textTime!!
-        val textTitle = view.textTitle!!
-        val textTask = view.textTask!!
+        val txtShowDate = binding.txtShowDate
+        val textDate = binding.textDate
+        val txtShowTime = binding.txtShowTime
+        val textTime = binding.textTime
+        val textTitle = binding.textTitle
+        val textTask = binding.textTask
     }
 }

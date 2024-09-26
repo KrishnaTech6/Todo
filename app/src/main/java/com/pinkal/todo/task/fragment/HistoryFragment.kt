@@ -1,18 +1,22 @@
 package com.pinkal.todo.task.fragment
 
+import android.annotation.SuppressLint
 import android.graphics.*
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.helper.ItemTouchHelper
 import android.util.DisplayMetrics
 import android.util.Log
+import android.view.GestureDetector
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.ItemTouchHelper
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.pinkal.todo.R
+import com.pinkal.todo.databinding.FragmentHistoryBinding
 import com.pinkal.todo.task.adapter.TaskAdapter
 import com.pinkal.todo.task.database.DBManagerTask
 import com.pinkal.todo.task.model.TaskModel
@@ -20,7 +24,6 @@ import com.pinkal.todo.utils.getFormatDate
 import com.pinkal.todo.utils.getFormatTime
 import com.pinkal.todo.utils.views.recyclerview.itemclick.RecyclerItemClickListener
 import com.pinkal.todo.utils.views.recyclerview.itemdrag.OnStartDragListener
-import kotlinx.android.synthetic.main.fragment_history.view.*
 import java.util.*
 
 /**
@@ -38,13 +41,18 @@ class HistoryFragment : Fragment(), OnStartDragListener {
     lateinit var taskAdapter: TaskAdapter
 
     lateinit var mItemTouchHelper: ItemTouchHelper
+    private lateinit var binding: FragmentHistoryBinding
 
-    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.fragment_history, container, false)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+         binding = FragmentHistoryBinding.inflate(layoutInflater, container, false)
 
-        initialize(view)
+        initialize()
 
-        return view
+        return binding.root
     }
 
     override fun onResume() {
@@ -52,18 +60,18 @@ class HistoryFragment : Fragment(), OnStartDragListener {
         isTaskListEmpty()
     }
 
-    private fun initialize(view: View) {
+    private fun initialize() {
 
-        txtNoHistory = view.txtNoHistory
-        recyclerViewHistory = view.recyclerViewHistory
+        txtNoHistory = binding.txtNoHistory
+        recyclerViewHistory = binding.recyclerViewHistory
 
         recyclerViewHistory.setHasFixedSize(true)
-        recyclerViewHistory.layoutManager = LinearLayoutManager(activity!!) as RecyclerView.LayoutManager
+        recyclerViewHistory.layoutManager = LinearLayoutManager(requireContext()) as RecyclerView.LayoutManager
 
-        dbManager = DBManagerTask(activity)
+        dbManager = DBManagerTask(requireContext())
         mArrayList = dbManager.getHistoryTaskList()
 
-        taskAdapter = TaskAdapter(activity, mArrayList)
+        taskAdapter = TaskAdapter(requireContext(), mArrayList)
         recyclerViewHistory.adapter = taskAdapter
 
         initSwipe()
@@ -72,21 +80,28 @@ class HistoryFragment : Fragment(), OnStartDragListener {
 //        mItemTouchHelper = ItemTouchHelper(callback)
 //        mItemTouchHelper.attachToRecyclerView(recyclerViewHistory)
 
-        recyclerViewHistory.addOnItemTouchListener(
-                RecyclerItemClickListener(context, recyclerViewHistory, object : RecyclerItemClickListener.OnItemClickListener {
-                    override fun onItemClick(view: View, position: Int) {
-                        Log.e(TAG, "item click Position : " + position)
+        val gestureDetector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                return true
+            }
+        })
 
-                        val holder: TaskAdapter.ViewHolder = TaskAdapter.ViewHolder(view)
-
-                        clickForDetails(holder, position)
+        recyclerViewHistory.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                val childView = rv.findChildViewUnder(e.x, e.y)
+                if (childView != null && gestureDetector.onTouchEvent(e)) {
+                    val position = rv.getChildAdapterPosition(childView)
+                    if (position != RecyclerView.NO_POSITION) {
+                        // Handle item click
+                        Log.e(TAG, "item click Position : $position")
+                        val task = taskAdapter.getHolder(position) // Implement this in your TaskAdapter
+                        clickForDetails(task, position)
                     }
-
-                    override fun onLongItemClick(view: View, position: Int) {
-                        Log.e(TAG, "item long click Position : " + position)
-                    }
-                })
-        )
+                    return true // Intercept the touch event
+                }
+                return false // Do not intercept the touch event
+            }
+        })
     }
 
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
@@ -158,6 +173,7 @@ class HistoryFragment : Fragment(), OnStartDragListener {
                 }
             }
 
+            @SuppressLint("ResourceType")
             override fun onChildDraw(canvas: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
 
                 if (actionState === ItemTouchHelper.ACTION_STATE_SWIPE) {

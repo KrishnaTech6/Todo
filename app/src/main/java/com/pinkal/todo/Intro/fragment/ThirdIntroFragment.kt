@@ -1,14 +1,20 @@
 package com.pinkal.todo.Intro.fragment
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+
 /**
  * Created by Pinkal on 13/6/17.
  */
-class ThirdIntroFragment : android.support.v4.app.Fragment() {
+class ThirdIntroFragment : Fragment() {
 
     companion object {
-        fun newInstance(pageNum: Int): com.pinkal.todo.Intro.fragment.ThirdIntroFragment {
+        fun newInstance(pageNum: Int): ThirdIntroFragment {
 
-            val fragmentThird = com.pinkal.todo.Intro.fragment.ThirdIntroFragment()
+            val fragmentThird = ThirdIntroFragment()
 
             val bundle = android.os.Bundle()
             bundle.putInt(com.pinkal.todo.utils.KEY_PAGE_NUMBER, pageNum)
@@ -19,7 +25,11 @@ class ThirdIntroFragment : android.support.v4.app.Fragment() {
         }
     }
 
-    override fun onCreateView(inflater: android.view.LayoutInflater?, container: android.view.ViewGroup?, savedInstanceState: android.os.Bundle?): android.view.View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater!!.inflate(com.pinkal.todo.R.layout.fragment_third_intro, container, false)
 
         initialize(view)
