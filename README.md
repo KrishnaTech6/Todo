@@ -4,10 +4,10 @@ Todo Android app using Kotlin
 This app is use for daily tasks. User can create task, edit task and delete task. In Task you can add to category, that which task belong to which category. User can also manage Category, add, update and delete category. User can also add date and time for reminder.
 
 ### What I did 
-Shifted the gradle frmo 2017 to 2024 configuration 
-android -> androidx
-kotlin-extensions -> viewBinding
-Removed deprecated code with new code
+- Shifted the gradle frmo 2017 to 2024 configuration 
+- android -> androidx
+- kotlin-extensions -> viewBinding
+- Removed deprecated code with new code
 
 
 Screenshots
