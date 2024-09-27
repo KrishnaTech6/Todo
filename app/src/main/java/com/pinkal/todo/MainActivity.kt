@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     lateinit var handler: Handler
     var doubleBackToExitPressedOnce = false
 
-    private val toolbarMain = findViewById<Toolbar>(R.id.toolbarMain)
+    private lateinit var  toolbarMain: Toolbar
 
     private lateinit var binding: ActivityMainBinding
 
@@ -45,7 +46,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         initialize()
 
-        checkForUpdate().execute()
+        //checkForUpdate().execute()
 
         // loading dashboard fragment
         val ft = supportFragmentManager.beginTransaction()
@@ -57,6 +58,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
      * initializing views and data
      * */
     fun initialize() {
+        toolbarMain = findViewById<Toolbar>(R.id.toolbarMain)
         setSupportActionBar(toolbarMain)
 
         val toggle = ActionBarDrawerToggle(
@@ -82,7 +84,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             this.doubleBackToExitPressedOnce = true
             toastMessage(mActivity, getString(R.string.please_click_again_to_exit))
 
-            Handler().postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
+            Handler(Looper.getMainLooper()).postDelayed({ doubleBackToExitPressedOnce = false }, 2000)
         }
     }
 

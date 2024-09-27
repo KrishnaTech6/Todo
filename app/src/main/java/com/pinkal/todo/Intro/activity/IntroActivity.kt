@@ -52,7 +52,7 @@ class IntroActivity : AppCompatActivity() {
         binding.circleIndicator.fillColor = resources.getColor(R.color.colorWhite) // dots fill color
 
         binding.txtSkipIntro.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(Intent(this@IntroActivity, MainActivity::class.java))
             finish()
         }
 
